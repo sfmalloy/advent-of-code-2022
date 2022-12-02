@@ -8,6 +8,7 @@ syscall numbers for x86_64
 - write = 1
 - open  = 2
 - close = 3
+- exit  = 60
 */
 
 /**
@@ -59,23 +60,24 @@ write_int:
     pushq %rbx
     pushq %r12
     
-    movl %edi, %ebx         # ebx = x
-    movq $4, %r12           # r12 = 4
-    subq $4, %rsp           # rsp -= 4
+    movq $1, %r12           # r12 = 1
+    dec %rsp
     movq $0xa, (%rsp)       # *rsp = '\n'
+
+    movl %edi, %ebx         # ebx = x
     movl $10, %ecx          # ecx = 10
 wloop:
-    addq $4, %r12           # r12 += 4
-    subq $4, %rsp           # rsp -= 4
+    xorq %rdx, %rdx         # edx = 0
+    movq %rbx, %rax         # eax = ebx
+    idivq %rcx              # edx:eax /= 10
+    movq %rax, %rbx         # ebx = eax
+    addq $0x30, %rdx        # edx += '0'
 
-    xorl %edx, %edx         # edx = 0
-    movl %ebx, %eax         # eax = ebx
-    idivl %ecx              # edx:eax /= 10
-    movl %eax, %ebx         # ebx = eax
-    addl $0x30, %edx        # edx += '0'
-    movl %edx, (%rsp)       # *rsp = edx
+    inc %r12
+    dec %rsp
+    mov %dl, (%rsp)         # *rsp = edx
 
-    cmp $0, %ebx
+    cmp $0, %rbx
     je end_wloop            # if (ebx == 0) jump to end_wloop
     jmp wloop               # jump to start of loop
 end_wloop:
@@ -98,13 +100,13 @@ int get_elf(int fd)
 get_elf:
     pushq %rbp
     movq %rsp, %rbp
-    pushq %r10
+    pushq %r12
     pushq %rbx
 
-    movq %rdi, %r10         # r10 = fd
+    movq %rdi, %r12         # r12 = fd
     xorl %ebx, %ebx         # ebx = 0
 sum_loop:
-    movq %r10, %rdi         # rdi = fd
+    movq %r12, %rdi         # rdi = fd
     callq read_int
     cmpl $0, %eax
     jle end_sum             # if (eax <= 0) jump to end_sum
@@ -113,7 +115,7 @@ sum_loop:
 end_sum:
     movl %ebx, %eax         # return ebx
     popq %rbx
-    popq %r10
+    popq %r12
     leave
     ret
 
@@ -166,7 +168,7 @@ end:
     addl (%rsp), %edi       # edi += c
     callq write_int         # print(edi)
 
-    movl 12(%rcx), %edi     # edi = fd
+    movl 12(%rsp), %edi     # edi = fd
     movl $3, %eax           # set syscall number to close
     syscall
 exit_prog:
