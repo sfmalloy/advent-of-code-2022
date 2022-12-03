@@ -15,18 +15,18 @@ def run_all():
     total_time = 0
     curr_time = 0
     table = StringIO()
-    print(f'+{"-"*7}+{"-"*14}+', file=table)
-    print(f'| Day # |     {"Time":<9}|', file=table)
-    print(f'+{"-"*7}+{"-"*14}+', file=table)
+    print(f'╭{"─"*7}┬{"─"*14}╮', file=table)
+    print(f'│ Day # │     {"Time":<9}│', file=table)
+    print(f'├{"─"*7}┼{"─"*14}┤', file=table)
     old_stdout = sys.stdout
     sys.stdout = StringIO()
     while day_num <= 25:
         curr_time = run_single(day_num)
         if curr_time > 0:
-            print(f'| {day_num_file(day_num):>5} | {curr_time:>9.3f} ms |', file=table)
+            print(f'│ {day_num_file(day_num):>5} │ {curr_time:>9.3f} ms │', file=table)
             total_time += curr_time
         day_num += 1
-    print(f'+{"-"*7}+{"-"*14}+', file=table)
+    print(f'├{"─"*7}┼{"─"*14}┤', file=table)
     sys.stdout = old_stdout
     print(table.getvalue(), end='')
     return total_time
@@ -65,8 +65,8 @@ def main():
 
     if options.run_all:
         time = run_all()
-        print(f'| Total | {time:>9.3f} ms |')
-        print(f'+{"-"*7}+{"-"*14}+')
+        print(f'│ Total │ {time:>9.3f} ms │')
+        print(f'╰{"─"*7}┴{"─"*14}╯')
     elif options.day is not None:
         time = run_single(options.day, options.file)
         if time > 0:
