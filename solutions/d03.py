@@ -1,5 +1,11 @@
 from io import TextIOWrapper
 
+def priority(c):
+    if c.islower():
+        return ord(c) - ord('a') + 1
+    else:
+        return ord(c) - ord('A') + 27
+
 def main(file: TextIOWrapper):
     rucksacks = [line.strip() for line in file.readlines()]
     s1 = 0
@@ -9,15 +15,7 @@ def main(file: TextIOWrapper):
         for g in groups:
             begin = g[:len(g)//2]
             end = g[len(g)//2:]
-            same = (set(begin) & set(end)).pop()
-            if same.islower():
-                s1 += ord(same) - ord('a') + 1
-            else:
-                s1 += ord(same) - ord('A') + 27
-        same = (set(groups[0]) & set(groups[1]) & set(groups[2])).pop()
-        if same.islower():
-            s2 += ord(same) - ord('a') + 1
-        else:
-            s2 += ord(same) - ord('A') + 27
+            s1 += priority((set(begin) & set(end)).pop())
+        s2 += priority((set(groups[0]) & set(groups[1]) & set(groups[2])).pop())
     print(s1)
     print(s2)
