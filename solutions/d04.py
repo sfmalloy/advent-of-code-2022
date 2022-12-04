@@ -1,14 +1,15 @@
 from io import TextIOWrapper
 from dataclasses import dataclass
+from typing import Self
 
 @dataclass
 class Interval:
     start: int
     end: int
 
-    def full_overlap(self, other) -> bool:
+    def full_overlap(self, other: Self) -> bool:
         return self.start >= other.start and self.end <= other.end
-    def partial_overlap(self, other) -> bool:
+    def partial_overlap(self, other: Self) -> bool:
         return self.end >= other.start and self.start <= other.end
 
 def main(file: TextIOWrapper):
