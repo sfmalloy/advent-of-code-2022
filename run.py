@@ -53,6 +53,15 @@ def run_single(day_num, input_file=None):
 
     return 1000 * (end - start)
 
+def run_average(day_num, num_runs, input_file=None):
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+    s = 0
+    for _ in range(num_runs):
+        s += run_single(day_num, input_file)
+    sys.stdout = old_stdout
+    return s / num_runs
+
 def main():
     parser = ArgumentParser()
     parser.add_argument('-d', '--day', dest='day', help='Runs day <d>. If -f is not specified, '\
@@ -60,6 +69,7 @@ def main():
     parser.add_argument('-a', '--all', action='store_true', dest='run_all', 
         default=False, help='Run all days')
     parser.add_argument('-f', '--file', dest='file', help='Specify different input file from default')
+    parser.add_argument('-n', '--numruns', dest='num_runs', help='Specify number of runs to get an average time', default=1)
 
     options = parser.parse_args()
 
@@ -68,7 +78,12 @@ def main():
         print(f'│ Total │ {time:>9.3f} ms │')
         print(f'╰{"─"*7}┴{"─"*14}╯')
     elif options.day is not None:
-        time = run_single(options.day, options.file)
+        time = 0
+        if options.num_runs == 1:
+            time = run_single(options.day, options.file)
+        else:
+            time = run_average(options.day, int(options.num_runs), options.file)
+            print(f'Day {options.day} | {options.num_runs} runs')
         if time > 0:
             print(f'Time: {time:.3f}ms')
 

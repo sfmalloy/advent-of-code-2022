@@ -1,12 +1,7 @@
 from io import TextIOWrapper
+import heapq
 
 def main(file: TextIOWrapper):
-    cals = file.read().split('\n\n')
-    m = 0
-    totals = []
-    for c in cals:
-        s = sum(map(int,c.split()))
-        m = max(s, m)
-        totals.append(s)
-    print(m)
-    print(sum(sorted(totals)[-3:]))
+    totals = heapq.nlargest(3, [sum(map(int, c.split())) for c in file.read().split('\n\n')])
+    print(totals[-1])
+    print(sum(totals))
