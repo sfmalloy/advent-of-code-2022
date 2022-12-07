@@ -10,8 +10,6 @@ def day_num_file(day_num):
         return f'0{day_num}'
     return day_num
 
-# TODO: remove print code from here and return a list instead.
-# TODO: be able to do multiple runs
 def run_all():
     day_num = 1
     total_time = 0
