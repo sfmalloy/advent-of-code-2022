@@ -1,12 +1,24 @@
 import os
 import sys
-import importlib
 from timeit import default_timer as timer
 from argparse import ArgumentParser
 from io import StringIO
 
+import solutions
+
+DAYS = [
+    None,
+    solutions.d01.main,
+    solutions.d02.main,
+    solutions.d03.main,
+    solutions.d04.main,
+    solutions.d05.main,
+    solutions.d06.main,
+    solutions.d07.main
+]
+
 def day_num_file(day_num):
-    if int(day_num) < 10:
+    if day_num < 10:
         return f'0{day_num}'
     return day_num
 
@@ -32,23 +44,23 @@ def run_all():
     return total_time
 
 def run_single(day_num, input_file=None):
-    day_num = day_num_file(day_num)
+    day_name = day_num_file(day_num)
 
     if input_file is None:
-        input_file = os.path.join('inputs', f'd{day_num}.in')
-    solution_file = os.path.join('solutions', f'd{day_num}.py')
+        input_file = os.path.join('inputs', f'd{day_name}.in')
+    solution_file = os.path.join('solutions', f'd{day_name}.py')
 
     if not os.path.exists(solution_file):
-        print(f'Day {day_num} solution file not found')
+        print(f'Day {day_name} solution file not found')
         return -1
     elif not os.path.exists(input_file):
         print(f'Input file {input_file} not found')
         return -1
 
-    solution = importlib.import_module(f'.d{day_num}', package='solutions')
+    solution = DAYS[day_num]
     start = timer()
     with open(input_file) as f:
-        solution.main(f)
+        solution(f)
     end = timer()
 
     return 1000 * (end - start)
@@ -80,9 +92,9 @@ def main():
     elif options.day is not None:
         time = 0
         if options.num_runs == 1:
-            time = run_single(options.day, options.file)
+            time = run_single(int(options.day), options.file)
         else:
-            time = run_average(options.day, int(options.num_runs), options.file)
+            time = run_average(int(options.day), int(options.num_runs), options.file)
             print(f'Day {options.day} | {options.num_runs} runs')
         if time > 0:
             print(f'Time: {time:.3f}ms')
