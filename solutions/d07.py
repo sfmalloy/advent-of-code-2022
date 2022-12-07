@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 from io import TextIOWrapper
+from dataclasses import dataclass, field
 from typing import Self
 
 @dataclass
