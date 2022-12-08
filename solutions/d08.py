@@ -38,10 +38,9 @@ def visible_inside(grid: list[list[int]]):
     len_r = len(grid)-1
     len_c = len(grid[0])-1
     while len(stack) > 0:
-        if stack[-1] in done:
-            stack.pop()
-            continue
         r, c = stack.pop()
+        if (r, c) in done:
+            continue
         done.add((r, c))
         r_up = r - 1
         while r_up > 0 and grid[r_up][c] < grid[r][c]:
