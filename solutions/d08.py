@@ -14,7 +14,6 @@ def visible_outside(grid: list[list[int]]):
             if grid[r][c] > max_up[c]:
                 seen[r][c] = 1
                 max_up[c] = grid[r][c]
-        for c in range(1, len_c):
             if grid[r][c] > max_left[r]:
                 seen[r][c] = 1
                 max_left[r] = grid[r][c]
@@ -24,7 +23,6 @@ def visible_outside(grid: list[list[int]]):
             if grid[r][c] > max_right[r]:
                 seen[r][c] = 1
                 max_right[r] = grid[r][c]
-        for c in range(len_c-1, 0, -1):
             if grid[r][c] > max_down[c]:
                 seen[r][c] = 1
                 max_down[c] = grid[r][c]
