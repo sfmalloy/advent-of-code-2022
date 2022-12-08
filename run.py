@@ -14,7 +14,8 @@ DAYS = [
     solutions.d04.main,
     solutions.d05.main,
     solutions.d06.main,
-    solutions.d07.main
+    solutions.d07.main,
+    solutions.d08.main
 ]
 
 def day_num_file(day_num):
