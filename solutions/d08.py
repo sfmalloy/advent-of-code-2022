@@ -5,29 +5,29 @@ def visible_outside(grid: list[list[int]]):
     max_down = [grid[-1][c] for c in range(len(grid[-1]))]
     max_left = [grid[r][0] for r in range(len(grid))]
     max_right = [grid[r][-1] for r in range(len(grid))]
-    seen = [[0 for _ in range(len(grid[r]))] for r in range(len(grid))]
+    seen = set()
 
     len_r = len(grid)-1
     len_c = len(grid[0])-1
     for r in range(1, len_r):
         for c in range(1, len_c):
             if grid[r][c] > max_up[c]:
-                seen[r][c] = 1
+                seen.add((r,c))
                 max_up[c] = grid[r][c]
             if grid[r][c] > max_left[r]:
-                seen[r][c] = 1
+                seen.add((r,c))
                 max_left[r] = grid[r][c]
 
     for r in range(len_r-1, 0, -1):
         for c in range(len_c-1, 0, -1):
             if grid[r][c] > max_right[r]:
-                seen[r][c] = 1
+                seen.add((r,c))
                 max_right[r] = grid[r][c]
             if grid[r][c] > max_down[c]:
-                seen[r][c] = 1
+                seen.add((r,c))
                 max_down[c] = grid[r][c]
 
-    return (2 * (len(grid[0])+len(grid)-2)) + sum([sum([c for c in r]) for r in seen])
+    return (2 * (len(grid[0])+len(grid)-2)) + len(seen)
 
 def visible_inside(grid: list[list[int]]):
     best = 0

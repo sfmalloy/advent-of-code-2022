@@ -4,18 +4,18 @@ from timeit import default_timer as timer
 from argparse import ArgumentParser
 from io import StringIO
 
-import solutions
+from solutions import *
 
 DAYS = [
     None,
-    solutions.d01.main,
-    solutions.d02.main,
-    solutions.d03.main,
-    solutions.d04.main,
-    solutions.d05.main,
-    solutions.d06.main,
-    solutions.d07.main,
-    solutions.d08.main
+    d01.main,
+    d02.main,
+    d03.main,
+    d04.main,
+    d05.main,
+    d06.main,
+    d07.main,
+    d08.main
 ]
 
 def day_num_file(day_num):
