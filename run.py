@@ -15,7 +15,8 @@ DAYS = [
     d05.main,
     d06.main,
     d07.main,
-    d08.main
+    d08.main,
+    d09.main
 ]
 
 def day_num_file(day_num):
