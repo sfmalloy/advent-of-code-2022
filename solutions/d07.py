@@ -1,11 +1,12 @@
 from io import TextIOWrapper
 from dataclasses import dataclass, field
 from typing import Self
+from time import perf_counter
 
 @dataclass
 class File:
     name: str
-    size: str
+    size: int
 
     def __str__(self) -> str:
         return f'- {self.name} (file, size={self.size})'
@@ -54,9 +55,9 @@ def get_path_name(path: list[str]) -> str:
 def main(file: TextIOWrapper):
     path: list[str] = []
     dirs: dict[str, Directory] = dict()
-    currdir: Directory = None
-    for cmd in file.readlines():
-        cmd = cmd.strip().split()
+    currdir: Directory = Directory('')
+    for cmdline in file.readlines():
+        cmd = cmdline.strip().split()
         match cmd:
             case ['$', 'cd', '..']:
                 currdir = currdir.parent

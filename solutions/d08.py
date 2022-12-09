@@ -5,10 +5,10 @@ def visible_outside(grid: list[list[int]]):
     max_down = [grid[-1][c] for c in range(len(grid[-1]))]
     max_left = [grid[r][0] for r in range(len(grid))]
     max_right = [grid[r][-1] for r in range(len(grid))]
-    seen = set()
-
     len_r = len(grid)-1
     len_c = len(grid[0])-1
+    seen = set()
+
     for r in range(1, len_r):
         for c in range(1, len_c):
             if grid[r][c] > max_up[c]:
@@ -27,7 +27,7 @@ def visible_outside(grid: list[list[int]]):
                 seen.add((r,c))
                 max_down[c] = grid[r][c]
 
-    return (2 * (len(grid[0])+len(grid)-2)) + len(seen)
+    return 2 * (len(grid[0])+len(grid)-2) + len(seen)
 
 def visible_inside(grid: list[list[int]]):
     best = 0
@@ -64,7 +64,7 @@ def visible_inside(grid: list[list[int]]):
         if c_right < len_c:
             stack.append((r, c_right))
 
-        best = max(best, (r - r_up) * (r_down - r) * (c - c_left) * (c_right - c))
+        best = max(best, (r-r_up) * (r_down-r) * (c-c_left) * (c_right-c))
     return best
 
 
