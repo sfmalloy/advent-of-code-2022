@@ -3,7 +3,6 @@ import sys
 from timeit import default_timer as timer
 from argparse import ArgumentParser
 from io import StringIO
-from dataclasses import dataclass
 
 from solutions import *
 
@@ -17,7 +16,8 @@ DAYS = [
     d06.main,
     d07.main,
     d08.main,
-    d09.main
+    d09.main,
+    d10.main
 ]
 
 def day_num_file(day_num) -> str:
@@ -78,6 +78,7 @@ def run_average(day_num, num_runs, input_file=None):
     sys.stdout = old_stdout
     return s / num_runs
 
+# ASCII tables are fun...
 def print_table(times: dict[int, float], outputs: list[str]):
     part1_width = max([len(outputs[i])+2 for i in range(0, len(outputs), 2)])-1
     part2_width = max([len(outputs[i])+2 for i in range(1, len(outputs), 2)])-1
@@ -93,10 +94,23 @@ def print_table(times: dict[int, float], outputs: list[str]):
     print('├{}┼{}┼{}┼{}┤'.format('─'*(day_width+2), '─'*(part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
 
     for d, t in times.items():
-        print('│ {:>5} │ {:>{part1_width}} │ {:>{part2_width}} │ {:>{time_width}.3f} │'
-            .format(day_num_file(d), outputs[part1], outputs[part2], t, part1_width=part1_width, part2_width=part2_width, time_width=time_width))
-        part1 += 2
-        part2 += 2
+        if '█' in outputs[part2]:
+            for _ in range(2):
+                print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}} │'
+                    .format(' ', ' ', outputs[part2], ' ', day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+                part2 += 1
+            print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}.3f} │'
+                .format(day_num_file(d), outputs[part1], outputs[part2], t, day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+            part2 += 1
+            for _ in range(3):
+                print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}} │'
+                    .format(' ', ' ', outputs[part2], ' ', day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+                part2 += 1
+        else:
+            print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}.3f} │'
+                .format(day_num_file(d), outputs[part1], outputs[part2], t, day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+            part1 += 2
+            part2 += 2
     print('├{}┴{}┴{}┼{}┤'.format('─'*(day_width+2), '─'*(part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
     print(f'│ {"Total Time":^{day_width+part1_width+part2_width+6}} │ {sum(times.values()):>{time_width}.3f} │')
     print(f'╰{"─"*(day_width+part1_width+part2_width+8)}┴{"─"*(time_width+2)}╯')
