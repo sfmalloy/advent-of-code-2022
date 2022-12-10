@@ -4,21 +4,23 @@ from timeit import default_timer as timer
 from argparse import ArgumentParser
 from io import StringIO
 
-from solutions import *
+DAYS = []
+if sys.version_info.minor >= 11:
+    from solutions import *
+    DAYS = [
+        None,
+        d01.main,
+        d02.main,
+        d03.main,
+        d04.main,
+        d05.main,
+        d06.main,
+        d07.main,
+        d08.main,
+        d09.main,
+        d10.main,
+    ]
 
-DAYS = [
-    None,
-    d01.main,
-    d02.main,
-    d03.main,
-    d04.main,
-    d05.main,
-    d06.main,
-    d07.main,
-    d08.main,
-    d09.main,
-    d10.main
-]
 
 def day_num_file(day_num) -> str:
     if day_num < 10:
@@ -140,4 +142,7 @@ def main():
             print(f'Time: {time:.3f}ms')
 
 if __name__ == '__main__':
+    if sys.version_info.minor < 11:
+        print('Min version Python 3.11 required')
+        exit()
     main()
