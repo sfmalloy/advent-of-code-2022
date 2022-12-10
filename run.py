@@ -78,6 +78,29 @@ def run_average(day_num, num_runs, input_file=None):
     sys.stdout = old_stdout
     return s / num_runs
 
+def print_table(times: dict[int, float], outputs: list[str]):
+    part1_width = max([len(outputs[i])+2 for i in range(0, len(outputs), 2)])-1
+    part2_width = max([len(outputs[i])+2 for i in range(1, len(outputs), 2)])-1
+    time_width = 11
+    day_width = 5
+    part1 = 0
+    part2 = 1
+    print( '╭{}┬{}┬{}┬{}╮'.format('─'*(day_width+2), '─'*(part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
+
+    print('│ {:^{day}} │ {:^{part1}} │ {:^{part2}} │ {:^{time}} │'
+        .format('Day #', 'Part 1', 'Part 2', 'Time (ms)', 
+        day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+    print('├{}┼{}┼{}┼{}┤'.format('─'*(day_width+2), '─'*(part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
+
+    for d, t in times.items():
+        print('│ {:>5} │ {:>{part1_width}} │ {:>{part2_width}} │ {:>{time_width}.3f} │'
+            .format(day_num_file(d), outputs[part1], outputs[part2], t, part1_width=part1_width, part2_width=part2_width, time_width=time_width))
+        part1 += 2
+        part2 += 2
+    print('├{}┴{}┴{}┼{}┤'.format('─'*(day_width+2), '─'*(part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
+    print(f'│ {"Total Time":^{day_width+part1_width+part2_width+6}} │ {sum(times.values()):>{time_width}.3f} │')
+    print(f'╰{"─"*(day_width+part1_width+part2_width+8)}┴{"─"*(time_width+2)}╯')
+
 def main():
     parser = ArgumentParser()
     parser.add_argument('-d', '--day', dest='day', help='Runs day <d>. If -f is not specified, '\
@@ -91,26 +114,7 @@ def main():
 
     if options.run_all:
         times, outputs = run_all()
-        times = dict(filter(lambda p: p[1] > 0, times.items()))
-        time_width = 14
-        day_width = 7
-        part1_width = max([len(outputs[i])+2 for i in range(0, len(outputs), 2)]) + 2
-        part2_width = max([len(outputs[i])+2 for i in range(1, len(outputs), 2)]) + 2
-        
-        print(f'╭{"─"*day_width}┬{"─"*(part1_width)}┬{"─"*(part2_width)}┬{"─"*time_width}╮')
-        print(f'│ Day # │{"Part 1".center(part1_width)}│{"Part 2".center(part2_width)}│{"Time (ms)".center(time_width)}│')
-        print(f'├{"─"*day_width}┼{"─"*(part1_width)}┼{"─"*(part2_width)}┼{"─"*time_width}┤')
-
-        part1 = 0
-        part2 = 1
-        for d, t in times.items():
-            print(f'│{day_num_file(d):>{day_width-1}} │{outputs[part1]:>{part1_width-1}} │{outputs[part2]:>{part2_width-1}} │{t:{time_width-1}.3f} │')
-            part1 += 1
-            part2 += 1
-        print(f'├{"─"*day_width}┴{"─"*(part1_width)}┴{"─"*(part2_width)}┼{"─"*time_width}┤')
-
-        print(f'│ {"Total Time".center(day_width+part1_width+part2_width)} │ {sum(times.values()):>{time_width-2}.3f} │')
-        print(f'╰{"─"*(day_width+part1_width+part2_width+2)}┴{"─"*time_width}╯')
+        print_table(times, outputs)
     elif options.day is not None:
         time = 0
         if options.num_runs == 1:
