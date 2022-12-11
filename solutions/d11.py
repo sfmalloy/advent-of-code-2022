@@ -2,7 +2,6 @@ from io import TextIOWrapper
 
 import heapq
 from dataclasses import dataclass
-from enum import Enum
 from copy import deepcopy
 from functools import reduce
 from abc import abstractmethod, ABC
