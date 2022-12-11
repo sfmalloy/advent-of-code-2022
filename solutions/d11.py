@@ -1,4 +1,6 @@
 from io import TextIOWrapper
+
+import heapq
 from dataclasses import dataclass
 from collections import deque
 from enum import Enum
@@ -31,23 +33,21 @@ class Monkey:
     false: int
     num_inspected = 0
 
-def do_round(monkeys: list[Monkey]):
+def do_div_round(monkeys: list[Monkey]):
     for m in monkeys:
         m.num_inspected += len(m.items)
         for _ in range(len(m.items)):
-            worry = m.items.popleft()
-            worry = m.op.eval(worry) // 3
+            worry = m.op.eval(m.items.popleft()) // 3
             if worry % m.test == 0:
                 monkeys[m.true].items.append(worry)
             else:
                 monkeys[m.false].items.append(worry)
 
-def do_hyper_round(monkeys: list[Monkey], modulo: int):
+def do_mod_round(monkeys: list[Monkey], modulo: int):
     for m in monkeys:
         m.num_inspected += len(m.items)
         for _ in range(len(m.items)):
-            worry = m.items.popleft()
-            worry = m.op.eval(worry) % modulo
+            worry = m.op.eval(m.items.popleft()) % modulo
             if worry % m.test == 0:
                 monkeys[m.true].items.append(worry)
             else:
@@ -55,7 +55,7 @@ def do_hyper_round(monkeys: list[Monkey], modulo: int):
 
 def main(file: TextIOWrapper):
     notes = file.read().split('\n\n')
-    monkeys: list[Monkey] = []
+    div_monkeys: list[Monkey] = []
     for m in notes:
         lines = m.split('\n')
 
@@ -69,16 +69,16 @@ def main(file: TextIOWrapper):
         true = int(lines[4].split()[-1])
         false = int(lines[5].split()[-1])
 
-        monkeys.append(Monkey(items, expr, test, true, false))
-    no_div_monkeys: list[Monkey] = deepcopy(monkeys)
+        div_monkeys.append(Monkey(items, expr, test, true, false))
+    mod_monkeys: list[Monkey] = deepcopy(div_monkeys)
 
     for _ in range(20):
-        do_round(monkeys)
-    monkeys.sort(key=lambda m:m.num_inspected)
-    print(monkeys[-1].num_inspected*monkeys[-2].num_inspected)
+        do_div_round(div_monkeys)
+    largest = heapq.nlargest(2, div_monkeys, key=lambda m: m.num_inspected)
+    print(largest[0].num_inspected * largest[1].num_inspected)
 
-    modulo = reduce(lambda a,b: a * b, [m.test for m in monkeys])
+    modulo = reduce(lambda a,b: a * b, [m.test for m in mod_monkeys])
     for _ in range(10000):
-        do_hyper_round(no_div_monkeys, modulo)
-    no_div_monkeys.sort(key=lambda m:m.num_inspected)
-    print(no_div_monkeys[-1].num_inspected*no_div_monkeys[-2].num_inspected)
+        do_mod_round(mod_monkeys, modulo)
+    largest = heapq.nlargest(2, mod_monkeys, key=lambda m: m.num_inspected)
+    print(largest[0].num_inspected * largest[1].num_inspected)
