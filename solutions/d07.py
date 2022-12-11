@@ -1,7 +1,6 @@
 from io import TextIOWrapper
 from dataclasses import dataclass, field
 from typing import Self
-from time import perf_counter
 
 @dataclass
 class File:
