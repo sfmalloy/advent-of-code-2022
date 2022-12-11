@@ -5,22 +5,33 @@ from dataclasses import dataclass
 from enum import Enum
 from copy import deepcopy
 from functools import reduce
+from abc import abstractmethod, ABC
 
-class Op(Enum):
-    ADD = 0
-    MUL = 1
-
-class Expr:
-    op: Op
+class Expr(ABC):
     rhs: int
 
-    def __init__(self, op: Op, rhs: str):
-        self.op = op
+    def __init__(self, rhs: str):
         self.rhs = -1 if rhs == 'old' else int(rhs)
+
+    @abstractmethod
+    def eval(self, old: int) -> int:
+        pass
+
+class AddExpr(Expr):
+    def __init__(self, rhs: str):
+        super().__init__(rhs)
 
     def eval(self, old: int) -> int:
         r = old if self.rhs < 0 else self.rhs
-        return old + r if self.op == Op.ADD else old * r
+        return old + r
+
+class MulExpr(Expr):
+    def __init__(self, rhs: str):
+        super().__init__(rhs)
+
+    def eval(self, old: int) -> int:
+        r = old if self.rhs < 0 else self.rhs
+        return old * r
 
 @dataclass
 class Monkey:
@@ -62,14 +73,13 @@ def main(file: TextIOWrapper):
         items = list(map(int, lines[1].split(': ')[1].split(',')))
         
         _, str_op, rhs = lines[2].split('= ')[1].split()
-        op = Op.ADD if str_op == '+' else Op.MUL
-        expr = Expr(op, rhs)
+        op = AddExpr(rhs) if str_op == '+' else MulExpr(rhs)
 
         test = int(lines[3].split()[-1])
         true = int(lines[4].split()[-1])
         false = int(lines[5].split()[-1])
 
-        div_monkeys.append(Monkey(items, expr, test, true, false))
+        div_monkeys.append(Monkey(items, op, test, true, false))
     mod_monkeys: list[Monkey] = deepcopy(div_monkeys)
 
     for _ in range(20):
