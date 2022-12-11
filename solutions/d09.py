@@ -36,10 +36,12 @@ def init_head(head: Knot, dirs: list[Move]) -> list[tuple[int, int]]:
                     path.append(head.pos())
     return path
 
-def simulate(num_knots: int, dirs: list[Move]) -> int:
+def main(file: TextIOWrapper):
+    dirs = [(lambda d: Move(d[0], int(d[1])))(l.strip().split()) for l in file.readlines()]
+    knots = []
     head = init_head(Knot(), dirs)
     tail: list[tuple[int, int]] = []
-    for _ in range(num_knots-1):
+    for _ in range(9):
         tail = []
         curr = Knot()
         for x,y in head:
@@ -56,13 +58,8 @@ def simulate(num_knots: int, dirs: list[Move]) -> int:
                 curr.y -= 1
                 curr.x += 1 if x > curr.x else (-1 if x < curr.x else 0)
             tail.append(curr.pos())
+        knots.append(tail)
         head = tail
 
-    return len(set(tail))
-
-def main(file: TextIOWrapper):
-    dirs = [(lambda d: Move(d[0], int(d[1])))(l.strip().split()) for l in file.readlines()]
-    short = simulate(2, dirs)
-    long = simulate(10, dirs)
-    print(short)
-    print(long)
+    print(len(set(knots[0])))
+    print(len(set(tail)))
