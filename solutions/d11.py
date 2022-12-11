@@ -37,8 +37,7 @@ def do_round(monkeys: list[Monkey]):
         m.num_inspected += len(m.items)
         for _ in range(len(m.items)):
             worry = m.items.popleft()
-            worry = m.op.eval(worry)
-            worry //= 3
+            worry = m.op.eval(worry) // 3
             if worry % m.test == 0:
                 monkeys[m.true].items.append(worry)
             else:
@@ -80,9 +79,7 @@ def main(file: TextIOWrapper):
     print(monkeys[-1].num_inspected*monkeys[-2].num_inspected)
 
     modulo = reduce(lambda a,b: a * b, [m.test for m in monkeys])
-
-    for i in range(10000):
+    for _ in range(10000):
         do_hyper_round(no_div_monkeys, modulo)
-
     no_div_monkeys.sort(key=lambda m:m.num_inspected)
     print(no_div_monkeys[-1].num_inspected*no_div_monkeys[-2].num_inspected)
