@@ -109,6 +109,8 @@ def print_table(times: dict[int, float], outputs: list[str]):
                 print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}} │'
                     .format(' ', ' ', outputs[part2], ' ', day=day_width, part1=part1_width, part2=part2_width, time=time_width))
                 part2 += 1
+            part1 = part2
+            part2 += 1
         else:
             print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}.3f} │'
                 .format(day_num_file(d), outputs[part1], outputs[part2], t, day=day_width, part1=part1_width, part2=part2_width, time=time_width))
