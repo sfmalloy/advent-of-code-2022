@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from collections import deque
 from enum import Enum
 from copy import deepcopy
-from collections import defaultdict
 from functools import reduce
 
 class Op(Enum):
