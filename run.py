@@ -19,6 +19,7 @@ if sys.version_info.minor >= 11:
         d08.main,
         d09.main,
         d10.main,
+        d11.main,
     ]
 
 
