@@ -18,11 +18,13 @@ def main(file: TextIOWrapper):
         SCISSORS: ROCK
     }
     
+    upper = ord('X') - 1
+    lower = ord('A') - 1
     part1 = 0
     part2 = 0
     for a,b in games:
-        me = ord(b) - ord('X') + 1
-        other = ord(a) - ord('A') + 1
+        me = ord(b) - upper
+        other = ord(a) - lower
         if me == other:
             part1 += 3
         elif win[me] == other:
@@ -32,7 +34,7 @@ def main(file: TextIOWrapper):
             part2 += win[other]
         elif me == 2:
             part2 += 3 + other
-        elif me == 3:
+        else:
             part2 += 6 + lose[other]
         part1 += me
     
