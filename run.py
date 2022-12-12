@@ -38,13 +38,16 @@ def day_num_file(day_num) -> str:
     return f'{day_num}'
 
 
-def run_all() -> list[Output]:
+def run_all(num_runs=1) -> list[Output]:
     day_num = 1
     times: dict[int, float] = {}
     outputs: list[Output] = []
 
     while day_num <= len(DAYS)-1:
-        out = run_single(day_num)
+        if num_runs == 1:
+            out = run_single(day_num)
+        else:
+            out = run_average(day_num, num_runs)
         if out.time > 0:
             times[day_num] = out.time
             outputs.append(out)
@@ -84,17 +87,19 @@ def run_single(day_num: int, input_file=None) -> Output:
 
 
 def run_average(day_num, num_runs, input_file=None):
-    s = 0
-    for _ in range(num_runs):
+    out = run_single(day_num, input_file)
+    s = out.time
+    for _ in range(num_runs-1):
         s += run_single(day_num, input_file).time
-    return s / num_runs
+    out.time = s / num_runs
+    return out
 
 
 def print_table(outputs: list[Output]):
     part1_lines = [str(out.part1).splitlines() for out in outputs]
     part2_lines = [str(out.part2).splitlines() for out in outputs]
-    width1 = len(max(part1_lines, key=lambda l: len(l[0]))[0])
-    width2 = len(max(part2_lines, key=lambda l: len(l[0]))[0])
+    width1 = max(8, len(max(part1_lines, key=lambda l: len(l[0]))[0]))
+    width2 = max(8, len(max(part2_lines, key=lambda l: len(l[0]))[0]))
     day_width = 5
     time_width = 12
     print('╭{}┬{}┬{}┬{}╮'.format('─'*(day_width+2), '─' *
@@ -119,11 +124,15 @@ def print_table(outputs: list[Output]):
         else:
             print('│ {:>{day}} │ {:<{part1}} │ {:<{part2}} │ {:>{time}.3f} │'
                   .format(day_num_file(out.day), p1[0], p2[0], out.time, day=day_width, part1=width1, part2=width2, time=time_width))
-    print('├{}┴{}┴{}┼{}┤'.format('─'*(day_width+2), '─' *
-        (width1+2), '─'*(width2+2), '─'*(time_width+2)))
-    print(f'│ {"Total Time":^{day_width+width1+width2+6}} │ {sum([out.time for out in outputs]):>{time_width}.3f} │')
-    print(f'╰{"─"*(day_width+width1+width2+8)}┴{"─"*(time_width+2)}╯')
-        
+    
+    if len(outputs) > 1:
+        print('├{}┴{}┴{}┼{}┤'.format('─'*(day_width+2), '─' *
+            (width1+2), '─'*(width2+2), '─'*(time_width+2)))
+        print(f'│ {"Total Time":^{day_width+width1+width2+6}} │ {sum([out.time for out in outputs]):>{time_width}.3f} │')
+        print(f'╰{"─"*(day_width+width1+width2+8)}┴{"─"*(time_width+2)}╯')
+    else:
+        print(f'╰{"─"*(day_width+2)}┴{"─"*(width1+2)}┴{"─"*(width2+2)}┴{"─"*(time_width+2)}╯')
+
 
 
 def main():
@@ -136,22 +145,33 @@ def main():
                         help='Specify different input file from default')
     parser.add_argument('-n', '--numruns', dest='num_runs',
                         help='Specify number of runs to get an average time', default=1)
+    parser.add_argument('-x', '--hide', action='store_true', dest='hide',
+                        help='Replace output with a bunch of X\'s', default=False)
 
     options = parser.parse_args()
+    options.num_runs = int(options.num_runs)
     if options.run_all:
-        outputs = run_all()
+        outputs = run_all(options.num_runs)
+        if options.hide:
+            for out in outputs:
+                out.part1 = 'X'*min(40, len(str(out.part1)))
+                out.part2 = 'X'*min(40, len(str(out.part2)))
         print_table(outputs)
     elif options.day is not None:
         time = 0
         if options.num_runs == 1:
-            output, time = run_single(int(options.day), options.file)
-            print(output[0])
-            if len(output) > 1:
-                print(output[1])
+            output = run_single(int(options.day), options.file)
+            if options.hide:
+                output.part1 = 'X'*len(str(output.part1))
+                output.part2 = 'X'*len(str(output.part2))
+            print_table([output])
         else:
-            time = run_average(int(options.day), int(
+            output = run_average(int(options.day), int(
                 options.num_runs), options.file)
-            print(f'Day {options.day} | {options.num_runs} runs')
+            if options.hide:
+                output.part1 = 'X'*len(str(output.part1))
+                output.part2 = 'X'*len(str(output.part2))
+            print_table([output])
         if time > 0:
             print(f'Time: {time:.3f}ms')
 
