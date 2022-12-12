@@ -10,5 +10,4 @@ def start_point(packet: str, length: int) -> int:
 
 def main(file: TextIOWrapper):
     packet = file.readline().strip()
-    print(start_point(packet, 4))
-    print(start_point(packet, 14))
+    return start_point(packet, 4), start_point(packet, 14)

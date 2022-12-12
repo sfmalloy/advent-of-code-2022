@@ -77,5 +77,4 @@ def visible_inside(grid: list[list[int]]):
 
 def main(file: TextIOWrapper):
     grid = [list(map(int, list(row.strip()))) for row in file.readlines()]
-    print(visible_outside(grid))
-    print(visible_inside(grid))
+    return visible_outside(grid), visible_inside(grid)

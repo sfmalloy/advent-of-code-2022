@@ -3,6 +3,7 @@ import sys
 from timeit import default_timer as timer
 from argparse import ArgumentParser
 from io import StringIO
+from dataclasses import dataclass
 
 DAYS = []
 if sys.version_info.minor >= 11:
@@ -23,6 +24,13 @@ if sys.version_info.minor >= 11:
         d12.main,
     ]
 
+@dataclass
+class Output:
+    day: int = 0
+    part1: str | int = -1
+    part2: str | int = -1
+    time: float = -1
+
 
 def day_num_file(day_num) -> str:
     if day_num < 10:
@@ -30,107 +38,92 @@ def day_num_file(day_num) -> str:
     return f'{day_num}'
 
 
-def run_all() -> tuple[dict[int, float], list[str]]:
+def run_all() -> list[Output]:
     day_num = 1
     times: dict[int, float] = {}
+    outputs: list[Output] = []
 
-    # Hide stdout from printing to console
-    old_stdout = sys.stdout
-    sys.stdout = StringIO()
-
-    while day_num <= 25:
-        curr_time = run_single(day_num)
-        if curr_time > 0:
-            times[day_num] = curr_time
+    while day_num <= len(DAYS)-1:
+        out = run_single(day_num)
+        if out.time > 0:
+            times[day_num] = out.time
+            outputs.append(out)
         day_num += 1
-
-    # Revert stdout
-    s = sys.stdout
-    sys.stdout = old_stdout
-    s.seek(0)
-    outputs = list(
-        filter(lambda s: 'not found' not in s, s.read().splitlines()))
-
-    return times, outputs
+    return outputs
 
 
-def run_single(day_num, input_file=None):
+def run_single(day_num: int, input_file=None) -> Output:
     day_name = day_num_file(day_num)
 
     if input_file is None:
         input_file = os.path.join('inputs', f'd{day_name}.in')
     solution_file = os.path.join('solutions', f'd{day_name}.py')
 
+    out = Output()
+
     if not os.path.exists(solution_file):
         print(f'Day {day_name} solution file not found')
-        return -1
+        return out
     elif not os.path.exists(input_file):
         print(f'Input file {input_file} not found')
-        return -1
+        return out
 
     solution = DAYS[day_num]
     start = timer()
     with open(input_file) as f:
-        solution(f)
+        ans = solution(f)
     end = timer()
 
-    return 1000 * (end - start)
+    out.part1 = ans[0]
+    if len(ans) > 0:
+        out.part2 = ans[1]
+    out.time = 1000 * (end - start)
+    out.day = day_num
+
+    return out
 
 
 def run_average(day_num, num_runs, input_file=None):
-    old_stdout = sys.stdout
-    sys.stdout = StringIO()
     s = 0
     for _ in range(num_runs):
-        s += run_single(day_num, input_file)
-    sys.stdout = old_stdout
+        s += run_single(day_num, input_file).time
     return s / num_runs
 
 
-def print_table(times: dict[int, float], outputs: list[str]):
-    """
-    Print all outputs and runtimes to a table
-    """
-
-    part1_width = max([len(outputs[i])+2 for i in range(0, len(outputs), 2)])-1
-    part2_width = max([len(outputs[i])+2 for i in range(1, len(outputs), 2)])-1
-    time_width = 11
+def print_table(outputs: list[Output]):
+    part1_lines = [str(out.part1).splitlines() for out in outputs]
+    part2_lines = [str(out.part2).splitlines() for out in outputs]
+    width1 = len(max(part1_lines, key=lambda l: len(l[0]))[0])
+    width2 = len(max(part2_lines, key=lambda l: len(l[0]))[0])
     day_width = 5
-    part1 = 0
-    part2 = 1
+    time_width = 12
     print('╭{}┬{}┬{}┬{}╮'.format('─'*(day_width+2), '─' *
-          (part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
+          (width1+2), '─'*(width2+2), '─'*(time_width+2)))
 
     print('│ {:^{day}} │ {:^{part1}} │ {:^{part2}} │ {:^{time}} │'
           .format('Day #', 'Part 1', 'Part 2', 'Time (ms)',
-                  day=day_width, part1=part1_width, part2=part2_width, time=time_width))
+                  day=day_width, part1=width1, part2=width2, time=time_width))
     print('├{}┼{}┼{}┼{}┤'.format('─'*(day_width+2), '─' *
-          (part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
+          (width1+2), '─'*(width2+2), '─'*(time_width+2)))
 
-    for d, t in times.items():
-        if '█' in outputs[part2]:
-            for _ in range(2):
-                print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}} │'
-                      .format(' ', ' ', outputs[part2], ' ', day=day_width, part1=part1_width, part2=part2_width, time=time_width))
-                part2 += 1
-            print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}.3f} │'
-                  .format(day_num_file(d), outputs[part1], outputs[part2], t, day=day_width, part1=part1_width, part2=part2_width, time=time_width))
-            part2 += 1
-            for _ in range(3):
-                print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}} │'
-                      .format(' ', ' ', outputs[part2], ' ', day=day_width, part1=part1_width, part2=part2_width, time=time_width))
-                part2 += 1
-            part1 = part2
-            part2 += 1
+    for p1, p2, out in zip(part1_lines, part2_lines, outputs):
+        if len(p1) < len(p2):
+            for l in range(len(p2)//2):
+                print('│ {:>{day}} │ {:<{part1}} │ {:<{part2}} │ {:>{time}} │'
+                      .format(' ', ' ', p2[l], ' ', day=day_width, part1=width1, part2=width2, time=time_width))
+            print('│ {:>{day}} │ {:<{part1}} │ {:<{part2}} │ {:>{time}.3f} │'
+                  .format(day_num_file(out.day), p1[0], p2[len(p2)//2], out.time, day=day_width, part1=width1, part2=width2, time=time_width))
+            for l in range(1+len(p2)//2, len(p2)):
+                print('│ {:>{day}} │ {:<{part1}} │ {:<{part2}} │ {:>{time}} │'
+                      .format(' ', ' ', p2[l], ' ', day=day_width, part1=width1, part2=width2, time=time_width))
         else:
-            print('│ {:>{day}} │ {:>{part1}} │ {:>{part2}} │ {:>{time}.3f} │'
-                  .format(day_num_file(d), outputs[part1], outputs[part2], t, day=day_width, part1=part1_width, part2=part2_width, time=time_width))
-            part1 += 2
-            part2 += 2
+            print('│ {:>{day}} │ {:<{part1}} │ {:<{part2}} │ {:>{time}.3f} │'
+                  .format(day_num_file(out.day), p1[0], p2[0], out.time, day=day_width, part1=width1, part2=width2, time=time_width))
     print('├{}┴{}┴{}┼{}┤'.format('─'*(day_width+2), '─' *
-          (part1_width+2), '─'*(part2_width+2), '─'*(time_width+2)))
-    print(f'│ {"Total Time":^{day_width+part1_width+part2_width+6}} │ {sum(times.values()):>{time_width}.3f} │')
-    print(f'╰{"─"*(day_width+part1_width+part2_width+8)}┴{"─"*(time_width+2)}╯')
+        (width1+2), '─'*(width2+2), '─'*(time_width+2)))
+    print(f'│ {"Total Time":^{day_width+width1+width2+6}} │ {sum([out.time for out in outputs]):>{time_width}.3f} │')
+    print(f'╰{"─"*(day_width+width1+width2+8)}┴{"─"*(time_width+2)}╯')
+        
 
 
 def main():
@@ -145,14 +138,16 @@ def main():
                         help='Specify number of runs to get an average time', default=1)
 
     options = parser.parse_args()
-
     if options.run_all:
-        times, outputs = run_all()
-        print_table(times, outputs)
+        outputs = run_all()
+        print_table(outputs)
     elif options.day is not None:
         time = 0
         if options.num_runs == 1:
-            time = run_single(int(options.day), options.file)
+            output, time = run_single(int(options.day), options.file)
+            print(output[0])
+            if len(output) > 1:
+                print(output[1])
         else:
             time = run_average(int(options.day), int(
                 options.num_runs), options.file)

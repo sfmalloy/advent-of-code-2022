@@ -66,5 +66,4 @@ def main(file: TextIOWrapper):
         knots.append(tail)
         head = tail
 
-    print(len(set(knots[0])))
-    print(len(set(tail)))
+    return len(set(knots[0])), len(set(tail))

@@ -16,5 +16,4 @@ def main(file: TextIOWrapper):
                 or end_b >= start_a and start_b <= end_a):
             partial += 1
 
-    print(full)
-    print(partial)
+    return full, partial
