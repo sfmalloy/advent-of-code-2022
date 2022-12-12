@@ -38,5 +38,4 @@ def main(file: TextIOWrapper):
             part2 += 6 + lose[other]
         part1 += me
     
-    print(part1)
-    print(part2)
+    return part1, part2

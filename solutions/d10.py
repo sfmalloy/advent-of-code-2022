@@ -34,5 +34,4 @@ def main(file: TextIOWrapper):
         if i > 0 and i % 40 == 0:
             s += '\n'
         s += '█' if r else ' '
-    print(strength)
-    print(s)
+    return strength, s

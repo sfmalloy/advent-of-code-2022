@@ -17,5 +17,4 @@ def main(file: TextIOWrapper):
             s1 += priority((set(begin) & set(end)).pop())
         s2 += priority((set(groups[0]) & set(groups[1])
                        & set(groups[2])).pop())
-    print(s1)
-    print(s2)
+    return s1, s2

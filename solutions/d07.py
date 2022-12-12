@@ -89,5 +89,4 @@ def main(file: TextIOWrapper):
     unused = FS_SIZE_LIMIT - dirs['/'].size
     needed = FS_MIN_SIZE - unused
 
-    print(dirs['/'].get_small_sizes(100000))
-    print(dirs['/'].get_delete_candidate(needed))
+    return dirs['/'].get_small_sizes(100000), dirs['/'].get_delete_candidate(needed)

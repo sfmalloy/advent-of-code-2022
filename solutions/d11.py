@@ -91,11 +91,13 @@ def main(file: TextIOWrapper):
 
     for _ in range(20):
         do_div_round(div_monkeys)
-    largest = heapq.nlargest(2, div_monkeys, key=lambda m: m.num_inspected)
-    print(largest[0].num_inspected * largest[1].num_inspected)
+    largest_div = heapq.nlargest(2, div_monkeys, key=lambda m: m.num_inspected)
+    div_3 = largest_div[0].num_inspected * largest_div[1].num_inspected
 
     modulo = reduce(lambda a, b: a * b.test, div_monkeys, 1)
     for _ in range(10000):
         do_mod_round(mod_monkeys, modulo)
-    largest = heapq.nlargest(2, mod_monkeys, key=lambda m: m.num_inspected)
-    print(largest[0].num_inspected * largest[1].num_inspected)
+    largest_mod = heapq.nlargest(2, mod_monkeys, key=lambda m: m.num_inspected)
+    mod_primes = largest_mod[0].num_inspected * largest_mod[1].num_inspected
+
+    return div_3, mod_primes

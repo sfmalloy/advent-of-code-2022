@@ -32,5 +32,6 @@ def main(file: TextIOWrapper):
     for m in moves:
         move_one(crates, m)
         move_multi(epic_crates, m)
-    print(''.join([c[-1] for c in crates]))
-    print(''.join([c[-1] for c in epic_crates]))
+    single = ''.join([c[-1] for c in crates])
+    multi = ''.join([c[-1] for c in epic_crates])
+    return single, multi

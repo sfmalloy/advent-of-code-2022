@@ -107,5 +107,4 @@ def main(file: TextIOWrapper) -> tuple:
     end = find_end(letter_grid)
     letter_grid[start.r][start.c] = 'a'
     letter_grid[end.r][end.c] = 'z'
-    print(shortest_from_start(letter_grid, start, end))
-    print(shortest_from_closest(letter_grid, start, end))
+    return shortest_from_start(letter_grid, start, end), shortest_from_closest(letter_grid, start, end)
