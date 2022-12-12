@@ -1,5 +1,6 @@
 from io import TextIOWrapper
 
+
 def main(file: TextIOWrapper):
     clock = 0
     prog = [line.strip().split() for line in file.readlines()]
@@ -29,7 +30,7 @@ def main(file: TextIOWrapper):
         clock += 1
 
     s = ''
-    for i,r in enumerate(crt):
+    for i, r in enumerate(crt):
         if i > 0 and i % 40 == 0:
             s += '\n'
         s += '█' if r else ' '

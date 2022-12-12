@@ -2,6 +2,7 @@ from io import TextIOWrapper
 from dataclasses import dataclass, field
 from typing import Self
 
+
 @dataclass
 class File:
     name: str
@@ -9,9 +10,11 @@ class File:
 
     def __str__(self) -> str:
         return f'- {self.name} (file, size={self.size})'
+
     def __repr__(self) -> str:
         return self.__str__()
-    
+
+
 @dataclass
 class Directory:
     name: str
@@ -32,7 +35,7 @@ class Directory:
             d.print_tree(level+2)
         for f in self.files:
             print(f'{" "*level}{f}')
-    
+
     def get_small_sizes(self, limit: int) -> int:
         size = 0
         for d in self.subdirs:
@@ -40,16 +43,18 @@ class Directory:
                 size += d.size
             size += d.get_small_sizes(limit)
         return size
-    
+
     def get_delete_candidate(self, space_needed: int) -> int:
         space = self.size
         for d in self.subdirs:
             if d.size >= space_needed:
                 space = min(space, d.get_delete_candidate(space_needed))
         return space
-    
+
+
 def get_path_name(path: list[str]) -> str:
     return '/'.join(path)
+
 
 def main(file: TextIOWrapper):
     path: list[str] = []

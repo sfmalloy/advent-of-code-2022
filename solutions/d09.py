@@ -1,10 +1,12 @@
 from io import TextIOWrapper
 from dataclasses import dataclass
 
+
 @dataclass
 class Move:
     dir: str
     dist: int
+
 
 @dataclass
 class Knot:
@@ -13,6 +15,7 @@ class Knot:
 
     def pos(self) -> tuple[int, int]:
         return (self.x, self.y)
+
 
 def init_head(head: Knot, dirs: list[Move]) -> list[tuple[int, int]]:
     path = []
@@ -36,15 +39,17 @@ def init_head(head: Knot, dirs: list[Move]) -> list[tuple[int, int]]:
                     path.append(head.pos())
     return path
 
+
 def main(file: TextIOWrapper):
-    dirs = [(lambda d: Move(d[0], int(d[1])))(l.strip().split()) for l in file.readlines()]
+    dirs = [(lambda d: Move(d[0], int(d[1])))(l.strip().split())
+            for l in file.readlines()]
     knots = []
     head = init_head(Knot(), dirs)
     tail: list[tuple[int, int]] = []
     for _ in range(9):
         tail = []
         curr = Knot()
-        for x,y in head:
+        for x, y in head:
             if x - curr.x > 1:
                 curr.x += 1
                 curr.y += 1 if y > curr.y else (-1 if y < curr.y else 0)
