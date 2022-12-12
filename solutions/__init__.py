@@ -9,3 +9,4 @@ from . import d08
 from . import d09
 from . import d10
 from . import d11
+from . import d12
