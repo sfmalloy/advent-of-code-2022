@@ -1,10 +1,7 @@
 from io import TextIOWrapper
 
 def priority(c):
-    if c.islower():
-        return ord(c) - ord('a') + 1
-    else:
-        return ord(c) - ord('A') + 27
+    return ord(c) - ((ord('a') - 1) if c.islower() else (ord('A') - 27))
 
 def main(file: TextIOWrapper):
     rucksacks = [line.strip() for line in file.readlines()]

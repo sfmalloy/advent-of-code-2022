@@ -56,7 +56,9 @@ def do_mod_round(monkeys: list[Monkey], modulo: int):
     for m in monkeys:
         m.num_inspected += len(m.items)
         for i in m.items:
-            worry = m.op.eval(i) % modulo
+            worry = m.op.eval(i)
+            if worry >= modulo:
+                worry %= modulo
             if worry % m.test == 0:
                 monkeys[m.true].items.append(worry)
             else:
@@ -86,7 +88,7 @@ def main(file: TextIOWrapper):
     largest = heapq.nlargest(2, div_monkeys, key=lambda m: m.num_inspected)
     print(largest[0].num_inspected * largest[1].num_inspected)
 
-    modulo = reduce(lambda a,b: a * b, [m.test for m in mod_monkeys])
+    modulo = reduce(lambda a,b: a * b.test, div_monkeys, 1)
     for _ in range(10000):
         do_mod_round(mod_monkeys, modulo)
     largest = heapq.nlargest(2, mod_monkeys, key=lambda m: m.num_inspected)
