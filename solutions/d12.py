@@ -1,6 +1,6 @@
 from io import TextIOWrapper
 
-from queue import PriorityQueue
+from collections import deque
 from dataclasses import dataclass, field
 
 
@@ -35,12 +35,12 @@ def find_end(grid: list[list[str]]):
     return Point(0, 0)
 
 
-def check_no_reset(src: Node, dst: Node, dist: int, unvisited: PriorityQueue[Node]):
+def check_no_reset(src: Node, dst: Node, dist: int, unvisited: deque[Node]):
     if not dst.visited and dst.elevation - src.elevation <= 1:
         dst.dist = min(dist, dst.dist)
         if not dst.todo:
             dst.todo = True
-            unvisited.put(dst)
+            unvisited.appendleft(dst)
 
 
 def shortest_from_start(letter_grid: list[list[str]], start: Point, end: Point) -> int:
@@ -48,11 +48,11 @@ def shortest_from_start(letter_grid: list[list[str]], start: Point, end: Point) 
             for r, row in enumerate(letter_grid)]
 
     grid[start.r][start.c].dist = 0
-    unvisited: PriorityQueue[Node] = PriorityQueue()
-    unvisited.put(grid[start.r][start.c])
+    unvisited: deque[Node] = deque()
+    unvisited.appendleft(grid[start.r][start.c])
 
-    while not unvisited.empty():
-        curr = unvisited.get()
+    while len(unvisited) > 0:
+        curr = unvisited.pop()
         curr.visited = True
         if curr.pos.r == end.r and curr.pos.c == end.c:
             return curr.dist
@@ -68,12 +68,12 @@ def shortest_from_start(letter_grid: list[list[str]], start: Point, end: Point) 
     return 1000000
 
 
-def check_reset(src: Node, dst: Node, dist: int, unvisited: PriorityQueue[Node]):
+def check_reset(src: Node, dst: Node, dist: int, unvisited: deque[Node]):
     if not dst.visited and dst.elevation - src.elevation <= 1:
         dst.dist = min(dist if dst.elevation else 0, dst.dist)
         if not dst.todo:
             dst.todo = True
-            unvisited.put(dst)
+            unvisited.appendleft(dst)
 
 
 def shortest_from_closest(letter_grid: list[list[str]], start: Point, end: Point) -> int:
@@ -81,11 +81,11 @@ def shortest_from_closest(letter_grid: list[list[str]], start: Point, end: Point
               for r, row in enumerate(letter_grid)]
 
     grid[start.r][start.c].dist = 0
-    unvisited: PriorityQueue[Node] = PriorityQueue()
-    unvisited.put(grid[start.r][start.c])
+    unvisited: deque[Node] = deque()
+    unvisited.appendleft(grid[start.r][start.c])
 
-    while not unvisited.empty():
-        curr = unvisited.get()
+    while len(unvisited) > 0:
+        curr = unvisited.pop()
         curr.visited = True
         if curr.pos.r == end.r and curr.pos.c == end.c:
             return curr.dist
