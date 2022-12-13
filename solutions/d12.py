@@ -10,12 +10,12 @@ class Point:
     c: int
 
 
-@dataclass(order=True)
+@dataclass
 class Node:
-    pos: Point = field(compare=False)
-    visited: bool = field(compare=False)
-    elevation: int = field(compare=False)
-    todo: bool = field(default=False, compare=False)
+    pos: Point
+    visited: bool
+    elevation: int
+    todo: bool = False
     dist: int = 1000000
 
 
