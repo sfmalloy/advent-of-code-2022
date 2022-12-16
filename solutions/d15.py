@@ -27,30 +27,6 @@ def dist(a: Point, b: Point) -> int:
     return abs(a.x - b.x) + abs(a.y - b.y)
 
 
-def get_ranges(y: int, beacons: defaultdict[Point, list[Sensor]]):
-    ranges: list[Interval] = []
-    for sensors in beacons.values():
-        for s in sensors:
-            if abs(y - s.pos.y) <= s.beacon_dist:
-                dy = abs(y - s.pos.y)
-                dx = s.beacon_dist - dy
-                ranges.append(Interval(max(0, s.pos.x - dx), min(4000000, s.pos.x + dx)))
-    
-    for i, curr in enumerate(ranges):
-        for j in range(len(ranges)):
-            if not curr.valid():
-                break
-            if i != j and ranges[j].valid() and (curr.start >= ranges[j].start and curr.start <= ranges[j].stop):
-                curr.start = ranges[j].stop + 1
-        for j in range(len(ranges)):
-            if not curr.valid():
-                break
-            if i != j and ranges[j].valid() and (curr.stop >= ranges[j].start and curr.stop <= ranges[j].stop):
-                curr.stop = ranges[j].start - 1
-    
-    return [r for r in ranges if r.valid()]
-
-
 def main(file: TextIOWrapper):
     beacons: defaultdict[Point, list[Sensor]] = defaultdict(list)
     for line in file.readlines():
@@ -60,9 +36,10 @@ def main(file: TextIOWrapper):
         beacon_dist = dist(beacon, sensor_pos)
         beacons[beacon].append(Sensor(sensor_pos, beacon_dist))
 
+    beacon_vals = beacons.values()
     y = 2000000
     ranges: list[Interval] = []
-    for beacon, sensors in beacons.items():
+    for sensors in beacon_vals:
         for s in sensors:
             if abs(y - s.pos.y) <= s.beacon_dist:
                 dy = abs(y - s.pos.y)
@@ -92,10 +69,30 @@ def main(file: TextIOWrapper):
     hidden_y = 0
     y = 0
     for y in range(4000001):
-        ranges = get_ranges(y, beacons)
+        ranges: list[Interval] = []
+        for sensors in beacon_vals:
+            for s in sensors:
+                if abs(y - s.pos.y) <= s.beacon_dist:
+                    dy = abs(y - s.pos.y)
+                    dx = s.beacon_dist - dy
+                    ranges.append(Interval(max(0, s.pos.x - dx), min(4000000, s.pos.x + dx)))
+        
+        for i, outer in enumerate(ranges):
+            for j, inner in enumerate(ranges):
+                if not outer.valid():
+                    break
+                if i != j and inner.valid() and (outer.start >= inner.start and outer.start <= inner.stop):
+                    outer.start = inner.stop + 1
+            for j, inner in enumerate(ranges):
+                if not outer.valid():
+                    break
+                if i != j and inner.valid() and (outer.stop >= inner.start and outer.stop <= inner.stop):
+                    outer.stop = inner.start - 1
+
         covered = 0
         for r in ranges:
-            covered += r.stop - r.start + 1
+            if r.valid():
+                covered += r.stop - r.start + 1
         if covered < 4000001:
             hidden_y = y
             break
@@ -104,9 +101,10 @@ def main(file: TextIOWrapper):
     for x in range(4000001):
         found = False
         for r in ranges:
-            if x >= r.start and x <= r.stop:
-                found = True
-                break
+            if r.valid():
+                if x >= r.start and x <= r.stop:
+                    found = True
+                    break
         if not found:
             hidden_x = x
             break
