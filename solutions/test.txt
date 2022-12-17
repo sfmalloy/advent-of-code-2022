@@ -1,0 +1,8 @@
+right
+fall
+right
+fall
+right
+fall
+left
+done
