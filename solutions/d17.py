@@ -3,9 +3,6 @@ from collections import defaultdict
 
 
 def left(piece: list[list[int]], tower: list[list[int]], height: int) -> bool:
-    """
-    Returns True if piece has moved, False otherwise
-    """
     for r in range(len(piece)):
         for c in range(len(piece[r])):
             if piece[r][c] and (c-1 < 0 or tower[height-r][c-1]):
@@ -20,9 +17,6 @@ def left(piece: list[list[int]], tower: list[list[int]], height: int) -> bool:
 
 
 def right(piece: list[list[int]], tower: list[list[int]], height: int) -> bool:
-    """
-    Returns True if piece has moved, False otherwise
-    """
     for r in range(len(piece)):
         for c in range(len(piece[r])):
             if piece[r][c] and (c+1 > len(piece[r])-1 or tower[height-r][c+1]):
@@ -37,9 +31,6 @@ def right(piece: list[list[int]], tower: list[list[int]], height: int) -> bool:
 
 
 def test_drop(piece: list[list[int]], tower: list[list[int]], height: int) -> bool:
-    """
-    Returns true if piece can drop, otherwise false.
-    """
     for r in range(len(piece)):
         for c in range(len(piece[0])):
             if piece[r][c] and tower[height-r-1][c]:
