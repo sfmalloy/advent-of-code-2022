@@ -53,20 +53,21 @@ def find_cycle(pieces: list[list[list[int]]], moves: str):
     cycle = (0, 0)
     test = (0, 0)
     while True:
-        seen[(i % 5, move_ptr % len(moves))] += 1
-        if seen[(i % 5, move_ptr % len(moves))] == 2:
+        move_idx = i % 5
+        seen[(move_idx, move_ptr % len(moves))] += 1
+        if seen[(move_idx, move_ptr % len(moves))] == 2:
             total = len(tower)-1
             while 1 not in tower[total]:
                 total -= 1
             cycle = (i, move_ptr)
-            test = (i % 5, move_ptr % len(moves))
+            test = (move_idx, move_ptr % len(moves))
             break
         while tower[-3] == [0, 0, 0, 0, 0, 0, 0]:
             tower.pop()
-        while len(tower) < 3 + len(pieces[i%5]) or tower[-(3+len(pieces[i % 5]))] != [0, 0, 0, 0, 0, 0, 0]:
+        while len(tower) < 3 + len(pieces[i%5]) or tower[-(3+len(pieces[move_idx]))] != [0, 0, 0, 0, 0, 0, 0]:
             tower.append([0] * 7)
         height = len(tower)-1
-        piece = [[c for c in r] for r in pieces[i % 5]]
+        piece = [[c for c in r] for r in pieces[move_idx]]
         while True:
             moves[move_ptr % len(moves)](piece, tower, height)
             move_ptr += 1
@@ -81,16 +82,17 @@ def find_cycle(pieces: list[list[list[int]]], moves: str):
 
     test2 = (0, 0)
     while True:
-        seen[(i % 5, move_ptr % len(moves))] += 1
+        move_idx = i % 5
+        seen[(move_idx, move_ptr % len(moves))] += 1
         if seen[test] == 3:
             test2 = (i, move_ptr)
             break
         while tower[-3] == [0, 0, 0, 0, 0, 0, 0]:
             tower.pop()
-        while len(tower) < 3 + len(pieces[i%5]) or tower[-(3+len(pieces[i % 5]))] != [0, 0, 0, 0, 0, 0, 0]:
+        while len(tower) < 3 + len(pieces[move_idx]) or tower[-(3+len(pieces[move_idx]))] != [0, 0, 0, 0, 0, 0, 0]:
             tower.append([0] * 7)
         height = len(tower)-1
-        piece = [[c for c in r] for r in pieces[i % 5]]
+        piece = [[c for c in r] for r in pieces[move_idx]]
         while True:
             moves[move_ptr % len(moves)](piece, tower, height)
             move_ptr += 1
@@ -118,12 +120,13 @@ def stack(num_drops: int, pieces: list[list[list[int]]], moves: list):
     move_ptr = 0
 
     for i in range(num_drops):
-        while tower[-3] == [0, 0, 0, 0, 0, 0, 0]:
+        move_idx = i % 5
+        while tower[-3] == [0] * 7:
             tower.pop()
-        while len(tower) < 3 + len(pieces[i%5]) or tower[-(3+len(pieces[i % 5]))] != [0, 0, 0, 0, 0, 0, 0]:
+        while len(tower) < 3 + len(pieces[move_idx]) or tower[-(3+len(pieces[move_idx]))] != [0] * 7:
             tower.append([0] * 7)
         height = len(tower)-1
-        piece = [[c for c in r] for r in pieces[i % 5]]
+        piece = [[c for c in r] for r in pieces[move_idx]]
         while True:
             moves[move_ptr % len(moves)](piece, tower, height)
             move_ptr += 1
