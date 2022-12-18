@@ -1,6 +1,5 @@
 from io import TextIOWrapper
 from dataclasses import dataclass
-from typing import Self
 from collections import deque
 
 @dataclass(frozen=True, eq=True)
@@ -68,13 +67,11 @@ def main(file: TextIOWrapper):
     exterior_area = 0
     q: deque[Cube] = deque([Cube(smallest.x, smallest.y, smallest.z)])
     seen: set[Cube] = set()
-    exterior_cubes: set[Cube] = set()
     while len(q) > 0:
         curr = q.pop()
         while curr in seen:
             curr = q.pop()
         if curr in cubes:
-            exterior_cubes.add(curr)
             exterior_area += 1
         elif (curr.x >= smallest.x and curr.x <= largest.x 
                 and curr.y >= smallest.y and curr.y <= largest.y 
