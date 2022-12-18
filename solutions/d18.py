@@ -9,9 +9,6 @@ class Cube:
     y: int
     z: int
 
-    def dist(self, other: Self) -> int:
-        return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
-
 
 @dataclass
 class Vec3:
