@@ -8,6 +8,7 @@ class Point:
     x: int
     y: int
 
+
 @dataclass(frozen=True, eq=True)
 class Sensor:
     pos: Point
@@ -18,13 +19,23 @@ class Sensor:
 class Interval:
     start: int
     stop: int
-
-    def valid(self) -> bool:
-        return self.start <= self.stop
+    is_valid: bool = True
 
 
-def dist(a: Point, b: Point) -> int:
-    return abs(a.x - b.x) + abs(a.y - b.y)
+def filter_ranges(ranges: list[Interval]):
+    for i, outer in enumerate(ranges):
+        for j, inner in enumerate(ranges):
+            if not outer.is_valid:
+                break
+            elif i != j and inner.is_valid and (outer.start >= inner.start and outer.start <= inner.stop):
+                outer.start = inner.stop + 1
+                outer.is_valid = outer.start <= outer.stop
+        for j, inner in enumerate(ranges):
+            if not outer.is_valid:
+                break
+            elif i != j and inner.is_valid and (outer.stop >= inner.start and outer.stop <= inner.stop):
+                outer.stop = inner.start - 1
+                outer.is_valid = outer.start <= outer.stop
 
 
 def main(file: TextIOWrapper):
@@ -33,7 +44,7 @@ def main(file: TextIOWrapper):
         tokens = line.split()
         beacon = Point(int(tokens[8][2:-1]), int(tokens[9][2:]))
         sensor_pos = Point(int(tokens[2][2:-1]), int(tokens[3][2:-1]))
-        beacon_dist = dist(beacon, sensor_pos)
+        beacon_dist = abs(beacon.x - sensor_pos.x) + abs(beacon.y - sensor_pos.y)
         beacons[beacon].append(Sensor(sensor_pos, beacon_dist))
 
     beacon_vals = beacons.values()
@@ -41,58 +52,33 @@ def main(file: TextIOWrapper):
     ranges: list[Interval] = []
     for sensors in beacon_vals:
         for s in sensors:
-            if abs(y - s.pos.y) <= s.beacon_dist:
-                dy = abs(y - s.pos.y)
+            dy = abs(y - s.pos.y)
+            if dy <= s.beacon_dist:
                 dx = s.beacon_dist - dy
                 ranges.append(Interval(s.pos.x - dx, s.pos.x + dx))
-    
-    for i, curr in enumerate(ranges):
-        for j in range(len(ranges)):
-            if not curr.valid():
-                break
-            if i != j and ranges[j].valid() and (curr.start >= ranges[j].start and curr.start <= ranges[j].stop):
-                curr.start = ranges[j].stop + 1
-        for j in range(len(ranges)):
-            if not curr.valid():
-                break
-            if i != j and ranges[j].valid() and (curr.stop >= ranges[j].start and curr.stop <= ranges[j].stop):
-                curr.stop = ranges[j].start - 1
+    filter_ranges(ranges)
 
     total = 0
     for r in ranges:
-        if r.valid():
-            total += r.stop - r.start + 1
+        total += (r.stop - r.start + 1) if r.is_valid else 0
     for b in beacons:
-        if b.y == 2000000:
+        if b.y == y:
             total -= 1
 
     hidden_y = 0
-    y = 0
     for y in range(4000001):
-        ranges: list[Interval] = []
+        ranges = []
         for sensors in beacon_vals:
             for s in sensors:
-                if abs(y - s.pos.y) <= s.beacon_dist:
-                    dy = abs(y - s.pos.y)
+                dy = abs(y - s.pos.y)
+                if dy <= s.beacon_dist:
                     dx = s.beacon_dist - dy
                     ranges.append(Interval(max(0, s.pos.x - dx), min(4000000, s.pos.x + dx)))
-        
-        for i, outer in enumerate(ranges):
-            for j, inner in enumerate(ranges):
-                if not outer.valid():
-                    break
-                if i != j and inner.valid() and (outer.start >= inner.start and outer.start <= inner.stop):
-                    outer.start = inner.stop + 1
-            for j, inner in enumerate(ranges):
-                if not outer.valid():
-                    break
-                if i != j and inner.valid() and (outer.stop >= inner.start and outer.stop <= inner.stop):
-                    outer.stop = inner.start - 1
+        filter_ranges(ranges)
 
         covered = 0
         for r in ranges:
-            if r.valid():
-                covered += r.stop - r.start + 1
+            covered += (r.stop - r.start + 1) if r.is_valid else 0
         if covered < 4000001:
             hidden_y = y
             break
@@ -101,12 +87,12 @@ def main(file: TextIOWrapper):
     for x in range(4000001):
         found = False
         for r in ranges:
-            if r.valid():
+            if r.is_valid:
                 if x >= r.start and x <= r.stop:
                     found = True
                     break
         if not found:
             hidden_x = x
             break
-    
+
     return total, hidden_x * 4000000 + hidden_y
