@@ -16,19 +16,6 @@ class Vec3:
     z: int
 
 
-def print_dim(start_a: int, end_a: int, start_b: int, end_b: int, valid: set):
-    print(start_a, end_a, start_b, end_b)
-    xy_str = ''
-    for x in range(start_a - 1, end_a + 2):
-        for y in range(start_b - 1, end_b + 2):
-            if (x,y) in valid:
-                xy_str += '#'
-            else:
-                xy_str += '.'
-        xy_str += '\n'
-    print(xy_str)
-
-
 def main(file: TextIOWrapper):
     cubes = set(Cube(*map(int, line.strip().split(','))) for line in file.readlines())
     overlaps = 0
