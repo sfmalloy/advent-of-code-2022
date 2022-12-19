@@ -31,7 +31,7 @@ def filter_ranges(ranges: list[Interval]):
                 if outer.start >= inner.start and outer.start <= inner.stop:
                     outer.start = inner.stop + 1
                     outer.is_valid = outer.start <= outer.stop
-                elif (outer.stop >= inner.start and outer.stop <= inner.stop):
+                elif outer.stop >= inner.start and outer.stop <= inner.stop:
                     outer.stop = inner.start - 1
                     outer.is_valid = outer.start <= outer.stop
 
@@ -60,8 +60,7 @@ def main(file: TextIOWrapper):
     for r in ranges:
         total += (r.stop - r.start + 1) if r.is_valid else 0
     for b in beacons:
-        if b.y == y:
-            total -= 1
+        total -= b.y == y
 
     hidden_y = 0
     for y in range(4000001):
@@ -81,16 +80,10 @@ def main(file: TextIOWrapper):
             hidden_y = y
             break
     
-    hidden_x = 0
+    valid = [r for r in ranges if r.is_valid]
     for x in range(4000001):
-        found = False
-        for r in ranges:
-            if r.is_valid:
-                if x >= r.start and x <= r.stop:
-                    found = True
-                    break
-        if not found:
-            hidden_x = x
-            break
+        for r in valid:
+            if x >= r.start and x <= r.stop:
+                return total, x * 4000000 + hidden_y
 
-    return total, hidden_x * 4000000 + hidden_y
+    return total, -1
