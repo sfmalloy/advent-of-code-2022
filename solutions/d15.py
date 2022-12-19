@@ -27,15 +27,13 @@ def filter_ranges(ranges: list[Interval]):
         for j, inner in enumerate(ranges):
             if not outer.is_valid:
                 break
-            elif i != j and inner.is_valid and (outer.start >= inner.start and outer.start <= inner.stop):
-                outer.start = inner.stop + 1
-                outer.is_valid = outer.start <= outer.stop
-        for j, inner in enumerate(ranges):
-            if not outer.is_valid:
-                break
-            elif i != j and inner.is_valid and (outer.stop >= inner.start and outer.stop <= inner.stop):
-                outer.stop = inner.start - 1
-                outer.is_valid = outer.start <= outer.stop
+            elif i != j and inner.is_valid:
+                if outer.start >= inner.start and outer.start <= inner.stop:
+                    outer.start = inner.stop + 1
+                    outer.is_valid = outer.start <= outer.stop
+                elif (outer.stop >= inner.start and outer.stop <= inner.stop):
+                    outer.stop = inner.start - 1
+                    outer.is_valid = outer.start <= outer.stop
 
 
 def main(file: TextIOWrapper):
