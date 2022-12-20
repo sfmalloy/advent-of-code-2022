@@ -1,8 +1,7 @@
 import os
 import sys
-from timeit import default_timer as timer
+from time import perf_counter
 from argparse import ArgumentParser
-from io import StringIO
 from dataclasses import dataclass
 
 DAYS = []
@@ -28,6 +27,7 @@ if sys.version_info.minor >= 11:
         d16.main,
         d17.main,
         d18.main,
+        d19.main,
     ]
 
 @dataclass
@@ -78,10 +78,10 @@ def run_single(day_num: int, input_file=None) -> Output:
         return out
 
     solution = DAYS[day_num]
-    start = timer()
+    start = perf_counter()
     with open(input_file) as f:
         ans = solution(f)
-    end = timer()
+    end = perf_counter()
 
     out.part1 = ans[0]
     if len(ans) > 0:

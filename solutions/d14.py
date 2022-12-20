@@ -1,6 +1,5 @@
 from io import TextIOWrapper
 from dataclasses import dataclass
-from time import sleep
 from os import system
 
 
