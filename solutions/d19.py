@@ -147,18 +147,17 @@ def main(file: TextIOWrapper):
                 Robot(ore_cost=geode_bot_ore, obsidian_cost=geode_bot_obsidian)
             ), max_ore, 32, 0, Node()))
 
-    total1 = 0
-    for bid, blueprint in enumerate(blueprints1, start=1):
-        q = quality(*blueprint)
-        total1 += bid * q
+    # total1 = 0
+    # for bid, blueprint in enumerate(blueprints1, start=1):
+    #     q = quality(*blueprint)
+    #     total1 += bid * q
 
-    total2 = 1
-    for bid, blueprint in enumerate(blueprints2[:3], start=1):
-        q = quality(*blueprint)
-        total2 *= q
+    # total2 = 1
+    # for bid, blueprint in enumerate(blueprints2[:3], start=1):
+    #     q = quality(*blueprint)
+    #     total2 *= q
 
-    """
-    parallel version
+    # parallel version
     total1 = 0
     pool = Pool()
     l = pool.starmap(quality, blueprints1)
@@ -170,7 +169,6 @@ def main(file: TextIOWrapper):
     l = pool.starmap(quality, blueprints2)
     for i, ans in enumerate(l):
         total2 *= ans
-    
-    """
+    quality.cache_clear()
 
     return total1, total2
