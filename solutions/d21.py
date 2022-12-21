@@ -1,15 +1,6 @@
 from io import TextIOWrapper
 from abc import ABC, abstractmethod
 from typing import Self
-from enum import Enum, auto
-
-
-class Token(Enum):
-    ADD = auto()
-    SUB = auto()
-    MUL = auto()
-    DIV = auto()
-    NUM = auto()
 
 
 class Monkey(ABC):
@@ -117,25 +108,27 @@ def main(file: TextIOWrapper):
     root.rhs = old_root.rhs
     root.yell()
     original_lhs = root.lhs_value
+    original_rhs = root.rhs_value
 
     root.yell()
     magnitude = 10**len(str(root.rhs_value))
     humn.value += magnitude
-    if original_lhs > root.lhs_value:
+    humn_is_lhs = original_lhs != root.lhs_value
+    greater = False
+    if (humn_is_lhs and original_lhs > root.lhs_value) or (not humn_is_lhs and original_rhs > root.rhs_value):
         magnitude *= -1
+        greater = True
     
-    greater = root.lhs_value > root.rhs_value
     while not root.yell():
-        if greater and root.lhs_value < root.rhs_value:
+        if greater and ((humn_is_lhs and root.lhs_value < root.rhs_value) or (not humn_is_lhs and root.rhs_value < root.lhs_value)):
             magnitude //= 10
             magnitude *= -1
             greater = False
-        elif not greater and root.lhs_value > root.rhs_value:
+        elif not greater and ((humn_is_lhs and root.lhs_value > root.rhs_value) or (not humn_is_lhs and root.rhs_value > root.lhs_value)):
             magnitude //= 10
             magnitude *= -1
             greater = True
         humn.value += magnitude
-        print(humn.value)
     
     while root.yell():
         humn.value += magnitude
