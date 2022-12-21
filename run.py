@@ -29,6 +29,7 @@ if sys.version_info.minor >= 11:
         d18.main,
         d19.main,
         d20.main,
+        d21.main,
     ]
 
 @dataclass
