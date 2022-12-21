@@ -115,68 +115,30 @@ def main(file: TextIOWrapper):
     humn: NumMonkey = monkeys['humn']
     root.lhs = old_root.lhs
     root.rhs = old_root.rhs
-    humn.value = 3353687996514
-    print(root.yell())
+    root.yell()
+    original_lhs = root.lhs_value
 
-    # while not monkeys['root'].yell():
-    #     monkeys['humn'].value += 1
-    #     print(monkeys['root'].lhs_value, monkeys['root'].rhs_value)
-
-    # figure out which side 'humn' is on
-
-    # monkeys['root'].yell()
-    # lhs_start = root.lhs_value
-    # rhs_start = root.rhs_value
-    # start = humn.value
-    # humn.value -= 1
-    # monkeys['root'].yell()
-    # curr = humn.value
-    # lhs_curr = root.lhs_value
-    # rhs_curr = root.rhs_value
-
-    # humn.value = lhs_curr // (lhs_curr - lhs_start)
-    # root.yell()
-    # print(root.lhs_value, root.rhs_value, humn.value)
-    # print(humn.value)
-    # humn.value -= 250000000000
-    # root.yell()
-    # print(root.lhs_value, root.rhs_value)
-    # while root.lhs_value > root.rhs_value:
-    #     humn.value += 1000000
-    #     root.yell()
+    root.yell()
+    magnitude = 10**len(str(root.rhs_value))
+    humn.value += magnitude
+    if original_lhs > root.lhs_value:
+        magnitude *= -1
     
-    # while root.lhs_value < root.rhs_value:
-    #     humn.value -= 100000
-    #     print(1, root.lhs_value, root.rhs_value)
-    #     root.yell()
-
-    # while root.lhs_value > root.rhs_value:
-    #     humn.value += 10000
-    #     print(2, root.lhs_value, root.rhs_value)
-    #     root.yell()
-
-    # while root.lhs_value < root.rhs_value:
-    #     humn.value -= 1000
-    #     print(3, root.lhs_value, root.rhs_value)
-    #     root.yell()
-
-    # while root.lhs_value > root.rhs_value:
-    #     humn.value += 100
-    #     print(4, root.lhs_value, root.rhs_value)
-    #     root.yell()
-
-    # while root.lhs_value < root.rhs_value:
-    #     humn.value -= 10
-    #     print(5, root.lhs_value, root.rhs_value)
-    #     root.yell()
-
-    # while root.lhs_value > root.rhs_value:
-    #     humn.value += 1
-    #     print(5, root.lhs_value, root.rhs_value)
-    #     root.yell()
-    # humn.value += 1
-    print(root.lhs_value, root.rhs_value)
-
-    # p2 = monkeys['root'].yell()
+    greater = root.lhs_value > root.rhs_value
+    while not root.yell():
+        if greater and root.lhs_value < root.rhs_value:
+            magnitude //= 10
+            magnitude *= -1
+            greater = False
+        elif not greater and root.lhs_value > root.rhs_value:
+            magnitude //= 10
+            magnitude *= -1
+            greater = True
+        humn.value += magnitude
+        print(humn.value)
+    
+    while root.yell():
+        humn.value += magnitude
+    humn.value -= magnitude
 
     return p1,humn.value
