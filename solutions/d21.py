@@ -112,7 +112,6 @@ def main(file: TextIOWrapper):
 
     root.yell()
     magnitude = 10**len(str(root.rhs_value))
-    humn.value += magnitude
     humn_is_lhs = original_lhs != root.lhs_value
     greater = False
     if (humn_is_lhs and original_lhs > root.lhs_value) or (not humn_is_lhs and original_rhs > root.rhs_value):
