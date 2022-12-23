@@ -19,3 +19,4 @@ from . import d18
 from . import d19
 from . import d20
 from . import d21
+from . import d22
