@@ -2,11 +2,10 @@ from io import TextIOWrapper
 from dataclasses import dataclass, field
 from collections import defaultdict, deque
 from typing import Self
-from queue import PriorityQueue
 from math import lcm
 
 
-@dataclass(frozen=True, eq=True, order=True)
+@dataclass(frozen=True, eq=True)
 class Vec2:
     r: int
     c: int
@@ -23,7 +22,7 @@ class Vec2:
         return abs(self.r-other.r) + abs(self.c-other.c)
 
 
-@dataclass(frozen=True, eq=True, order=False)
+@dataclass(frozen=True, eq=True)
 class State:
     me: Vec2=field(compare=True,hash=True)
     blizzard_state: int=field(default=0,compare=False,hash=True)
