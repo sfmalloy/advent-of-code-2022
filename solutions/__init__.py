@@ -22,3 +22,4 @@ from . import d21
 from . import d22
 from . import d23
 from . import d24
+from . import d25
