@@ -88,42 +88,41 @@ def main(file: TextIOWrapper):
     width = len(lines[0])-2
 
     goal = Vec2(0, 1)
-    blizzards = defaultdict(set)
+    blizzards = defaultdict(list)
     walls = set()
     for row, line in enumerate(lines):
         for col, char in enumerate(line):
             if char == '#':
                 walls.add(Vec2(row, col))
             elif char != '.':
-                blizzards[Vec2(row, col)].add(bvel[char])
+                blizzards[Vec2(row, col)].append(bvel[char])
             else:
                 goal = Vec2(row, col)
 
     blizzard_states = []
     upper_bound = lcm(width, height)
     while len(blizzard_states) < upper_bound:
-        blizzard_states.append({k:v for k,v in blizzards.items()})
-        new_blizzards = defaultdict(set)
+        blizzard_states.append(blizzards.keys())
+        new_blizzards = defaultdict(list)
         for pos, bset in blizzards.items():
             for b in bset:
                 if pos+b not in walls:
-                    new_blizzards[pos+b].add(b)
+                    new_blizzards[pos+b].append(b)
                 elif b == DOWN:
-                    new_blizzards[Vec2(1, pos.c)].add(b)
+                    new_blizzards[Vec2(1, pos.c)].append(b)
                 elif b == UP:
-                    new_blizzards[Vec2(height, pos.c)].add(b)
+                    new_blizzards[Vec2(height, pos.c)].append(b)
                 elif b == LEFT:
-                    new_blizzards[Vec2(pos.r, width)].add(b)
+                    new_blizzards[Vec2(pos.r, width)].append(b)
                 elif b == RIGHT:
-                    new_blizzards[Vec2(pos.r, 1)].add(b)
+                    new_blizzards[Vec2(pos.r, 1)].append(b)
         blizzards = new_blizzards
 
     start = Vec2(0, 1)
     end = goal
     curr = go(State(start), end, blizzard_states, walls, height)
     p1 = curr.steps
-    back = go(curr, Vec2(0, 1), blizzard_states, walls, height)
-    end_again = go(back, end, blizzard_states, walls, height)
+    end_again = go(go(curr, Vec2(0, 1), blizzard_states, walls, height), end, blizzard_states, walls, height)
     p2 = end_again.steps
 
     return p1,p2
