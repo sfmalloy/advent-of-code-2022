@@ -1,0 +1,11 @@
+(lang dune 3.10)
+
+(name aoc2022)
+
+(generate_opam_files true)
+
+(package
+ (name aoc2022)
+ (depends ocaml dune))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
